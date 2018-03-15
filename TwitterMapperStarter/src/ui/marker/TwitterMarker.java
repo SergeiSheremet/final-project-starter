@@ -8,25 +8,21 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 
-public class TwitterMarker extends MapMarkerCircle{
+public abstract class TwitterMarker extends MapMarkerCircle{
 
-    private final BufferedImage image;
-    private static final double defaultRadius = 0.5;
-    private final String text;
+    protected final BufferedImage image;
+    private static final double defaultRadius = 1;
 
-    public TwitterMarker(Layer layer, Coordinate coord, Color color, BufferedImage image, String text) {
+    public TwitterMarker(Layer layer, Coordinate coord, Color color, BufferedImage image) {
         super(layer, null, coord, defaultRadius, STYLE.FIXED, getDefaultStyle());
 
         setColor(color);
         setBackColor(color);
 
         this.image = paintEdge(cropImage(image));
-        this.text = text;
     }
 
-    public String getText() {
-        return text;
-    }
+    public abstract String getText();
 
     @Override
     public double getRadius(){
@@ -66,9 +62,7 @@ public class TwitterMarker extends MapMarkerCircle{
 
         Graphics2D g2 = output.createGraphics();
 
-        //g2.setComposite(AlphaComposite.Src);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        //g2.setColor(this.getColor());
         g2.fill(new Ellipse2D.Float(0, 0, w, w));
 
         g2.setComposite(AlphaComposite.SrcAtop);
