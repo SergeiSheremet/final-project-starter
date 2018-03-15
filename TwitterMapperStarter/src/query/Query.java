@@ -5,7 +5,7 @@ import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.Layer;
 import org.openstreetmap.gui.jmapviewer.MapMarkerCircle;
 import twitter4j.Status;
-import ui.marker.TwitterMarker;
+import ui.TwitterMarker;
 import util.Util;
 
 import javax.swing.*;
@@ -73,13 +73,14 @@ public class Query implements Observer {
      * TODO: Implement this method
      */
     public void terminate() {
-
+        layer.setVisible(false);
     }
 
     @Override
     public void update(Observable o, Object arg) {
         Status s = (Status) arg;
         if(filter.matches(s)) {
+
             MapMarkerCircle twitterMarker = new TwitterMarker(layer, Util.statusCoordinate(s),
                     color, Util.imageFromURL(s.getUser().getProfileImageURL()), s.getText());
             map.addMapMarker(twitterMarker);

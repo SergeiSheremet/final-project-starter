@@ -1,4 +1,4 @@
-package ui.marker;
+package ui;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.Layer;
@@ -8,25 +8,31 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 
-public abstract class TwitterMarker extends MapMarkerCircle{
+public class TwitterMarker extends MapMarkerCircle{
 
-    protected final BufferedImage image;
+    private final BufferedImage image;
+    private final String text;
+    private final long id;
     private static final double defaultRadius = 1;
 
-    public TwitterMarker(Layer layer, Coordinate coord, Color color, BufferedImage image) {
+    public TwitterMarker(Layer layer, Coordinate coord, Color color, BufferedImage image, String text) {
         super(layer, null, coord, defaultRadius, STYLE.FIXED, getDefaultStyle());
 
         setColor(color);
         setBackColor(color);
 
         this.image = paintEdge(cropImage(image));
+        this.text = text;
+        this.id = id;
     }
-
-    public abstract String getText();
 
     @Override
     public double getRadius(){
         return image.getWidth() / 2 * defaultRadius;
+    }
+
+    public String getText() {
+        return text;
     }
 
     @Override

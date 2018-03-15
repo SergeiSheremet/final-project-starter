@@ -9,7 +9,6 @@ import org.openstreetmap.gui.jmapviewer.tilesources.BingAerialTileSource;
 import query.Query;
 import twitter.PlaybackTwitterSource;
 import twitter.TwitterSource;
-import ui.marker.TwitterMarker;
 import util.SphericalGeometry;
 
 import javax.swing.*;
