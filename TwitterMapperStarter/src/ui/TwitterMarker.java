@@ -3,25 +3,31 @@ package ui;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.Layer;
 import org.openstreetmap.gui.jmapviewer.MapMarkerCircle;
+import util.ImageEditor;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TwitterMarker extends MapMarkerCircle{
 
-    private final BufferedImage image;
     private final String text;
     private final long id;
+    private BufferedImage image;
+    private List<Color> colorList;
     private static final double defaultRadius = 1;
+    private static final int borderSize = 6;
 
-    public TwitterMarker(Layer layer, Coordinate coord, Color color, BufferedImage image, String text) {
+    public TwitterMarker(Layer layer, Coordinate coord, Color color, BufferedImage image, String text, long id) {
         super(layer, null, coord, defaultRadius, STYLE.FIXED, getDefaultStyle());
 
-        setColor(color);
-        setBackColor(color);
+        colorList = new ArrayList<>();
+        colorList.add(color);
 
-        this.image = paintEdge(cropImage(image));
+        this.image = ImageEditor.drawEdge(ImageEditor.cropImage(image), colorList.get(0), borderSize);
         this.text = text;
         this.id = id;
     }
@@ -30,9 +36,16 @@ public class TwitterMarker extends MapMarkerCircle{
     public double getRadius(){
         return image.getWidth() / 2 * defaultRadius;
     }
-
     public String getText() {
         return text;
+    }
+    public long getId() {
+        return id;
+    }
+
+    public void addColor(Color color) {
+        colorList.add(color);
+        image = ImageEditor.drawEdge(image, colorList.get(colorList.size() - 1), borderSize);
     }
 
     @Override
@@ -41,41 +54,5 @@ public class TwitterMarker extends MapMarkerCircle{
         int w2 = w / 2;
         g.drawImage(image, position.x - w2, position.y - w2, w, w, null);
         paintText(g, position);
-    }
-
-    private BufferedImage paintEdge(BufferedImage source) {
-        int w = source.getWidth();
-        int addedRadius = (int)(w * 0.25);
-
-        BufferedImage output = new BufferedImage(w + addedRadius, w + addedRadius, BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g2 = output.createGraphics();
-
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(this.getColor());
-        g2.fill(new Ellipse2D.Float(0, 0, w + addedRadius, w + addedRadius));
-
-        g2.drawImage(source, addedRadius / 2, addedRadius / 2, null);
-
-        g2.dispose();
-
-        return output;
-    }
-
-    private BufferedImage cropImage(BufferedImage source){
-        int w = source.getWidth();
-        BufferedImage output = new BufferedImage(w, w, BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g2 = output.createGraphics();
-
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.fill(new Ellipse2D.Float(0, 0, w, w));
-
-        g2.setComposite(AlphaComposite.SrcAtop);
-        g2.drawImage(source, 0, 0, null);
-
-        g2.dispose();
-
-        return output;
     }
 }

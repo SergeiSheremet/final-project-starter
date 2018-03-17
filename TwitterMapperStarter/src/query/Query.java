@@ -4,6 +4,7 @@ import filters.Filter;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.Layer;
 import org.openstreetmap.gui.jmapviewer.MapMarkerCircle;
+import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 import twitter4j.Status;
 import ui.TwitterMarker;
 import util.Util;
@@ -73,17 +74,31 @@ public class Query implements Observer {
      * TODO: Implement this method
      */
     public void terminate() {
-        layer.setVisible(false);
+
     }
 
     @Override
     public void update(Observable o, Object arg) {
         Status s = (Status) arg;
         if(filter.matches(s)) {
+            long id = s.getId();
+            boolean isExists = false;
 
-            MapMarkerCircle twitterMarker = new TwitterMarker(layer, Util.statusCoordinate(s),
-                    color, Util.imageFromURL(s.getUser().getProfileImageURL()), s.getText());
-            map.addMapMarker(twitterMarker);
+            for(MapMarker mm : map.getMapMarkerList()) {
+                TwitterMarker tm = (TwitterMarker)mm;
+                isExists = tm.getId() == id;
+
+                if (isExists) {
+                    tm.addColor(color);
+                    break;
+                }
+            }
+
+            if(!isExists) {
+                MapMarkerCircle twitterMarker = new TwitterMarker(layer, Util.statusCoordinate(s), color, Util.imageFromURL(s.getUser().getProfileImageURL()), s.getText(), id);
+                map.addMapMarker(twitterMarker);
+            }
+
         }
     }
 }
